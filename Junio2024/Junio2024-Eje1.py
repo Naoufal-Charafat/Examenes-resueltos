@@ -38,7 +38,7 @@ def get_frec_mutaciones(fich_entrada):
                 # Separar ID del paciente de las mutaciones
                 if ':' in linea:
                     # Dividir la línea en ID y mutaciones
-                    # Usamos split con maxsplit=1 para evitar dividir mutaciones que contengan ':
+                    # Usamos split con maxsplit=91 para evitar dividir mutaciones que contengan ':
                     partes = linea.split(':', 1)
                     # Verificar que hay dos partes (ID y mutaciones)
                     if len(partes) == 2:
@@ -54,6 +54,7 @@ def get_frec_mutaciones(fich_entrada):
                             # Eliminar espacios en blanco alrededor de cada mutación
                             # y asegurarnos de que no haya mutaciones vacías
                             mutaciones = [mutacion.strip() for mutacion in mutaciones]
+                            print(mutaciones)  # Para depuración, se puede eliminar en producción
                             # Contar cada mutación
                             for mutacion in mutaciones:
                                 if mutacion:  # Ignorar mutaciones vacías
