@@ -70,6 +70,7 @@ def get_frec_mutaciones(fich_entrada):
     except Exception:
         return -2
 
+
 '''Apartado B: Guardar frecuencias de mutaciones en un archivo'''
 def guarda_frec_mutaciones(dic, fich_salida):
     """
