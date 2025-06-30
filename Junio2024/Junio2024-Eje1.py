@@ -54,7 +54,7 @@ def get_frec_mutaciones(fich_entrada):
                             # Eliminar espacios en blanco alrededor de cada mutación
                             # y asegurarnos de que no haya mutaciones vacías
                             mutaciones = [mutacion.strip() for mutacion in mutaciones]
-                            print(mutaciones)  # Para depuración, se puede eliminar en producción
+                            
                             # Contar cada mutación
                             for mutacion in mutaciones:
                                 if mutacion:  # Ignorar mutaciones vacías
@@ -82,24 +82,38 @@ def guarda_frec_mutaciones(dic, fich_salida):
     """
     try:
         # Convertir diccionario a lista de tuplas (mutacion, frecuencia)
-        lista_mutaciones = list(dic.items())
+        # Usamos list(dic.items()) para convertir el diccionario en una lista de tuplas
+        # donde cada tupla es (mutacion, frecuencia)
+        lista_mutacionesOrdenada = list(dic.items())
         
-        # Ordenar por frecuencia de mayor a menor
-        # Usamos una función lambda para ordenar por el segundo elemento de la tupla (frecuencia)
-        # y luego por el nombre de la mutación alfabéticamente
-        # Primero ordenamos por mutación alfabéticamente para consistencia
-        lista_mutaciones.sort(key=lambda x: x[1], reverse=True)
+        # Ordenar la lista de mutaciones por frecuencia (segundo elemento de la tupla)
+        # Usamos sort con una función lambda para ordenar por el segundo elemento de la tupla
+        # La función lambda x: x[1] indica que queremos ordenar por el segundo elemento de cada tupla
+        # y reverse=True para ordenar de mayor a menor
+        # Si la lista está vacía, no hay nada que hacer
+        lista_mutacionesOrdenada.sort(key=lambda x: x[1], reverse=True)
         
         # Agrupar mutaciones con la misma frecuencia
         frecuencias_agrupadas = {}
-        for mutacion, frecuencia in lista_mutaciones:
+        for mutacion, frecuencia in lista_mutacionesOrdenada:
             if frecuencia not in frecuencias_agrupadas:
+                # Si la frecuencia no está en el diccionario, inicializamos una lista vacía
+                # para almacenar las mutaciones con esa frecuencia
+                # Usamos un diccionario para agrupar mutaciones por frecuencia
+                # La clave es la frecuencia y el valor es una lista de mutaciones 
                 frecuencias_agrupadas[frecuencia] = []
+            
+            # Añadimos la mutación a la lista correspondiente a su frecuencia
+            # Usamos append para añadir la mutación a la lista de mutaciones
             frecuencias_agrupadas[frecuencia].append(mutacion)
         
         # Escribir al archivo
         with open(fich_salida, 'w', encoding='utf-8') as archivo:
             # Ordenar las frecuencias de mayor a menor
+            # Usamos sorted para obtener una lista de frecuencias ordenadas
+            # sorted devuelve una lista de las claves del diccionario frecuencias_agrupadas
+            # y las ordena de mayor a menor
+            # reverse=True para ordenar de mayor a menor
             frecuencias_ordenadas = sorted(frecuencias_agrupadas.keys(), reverse=True)
             
             # Escribir cada grupo de mutaciones con su frecuencia
@@ -109,11 +123,10 @@ def guarda_frec_mutaciones(dic, fich_salida):
                 mutaciones = frecuencias_agrupadas[frecuencia]
                 # Ordenar las mutaciones alfabéticamente para consistencia
                 mutaciones.sort()
-                # Crear la línea con las mutaciones y su frecuencia
-                # Unimos las mutaciones con comas y añadimos la frecuencia al final
-                # Usamos join para crear una cadena de mutaciones separadas por comas
-                # y luego añadimos la frecuencia al final
+                # Crear la línea con las mutaciones y su frecuencia            
                 # Formato: mutacion1,mutacion2,...:frecuencia
+                # Usamos join para unir las mutaciones con comas
+                # y luego añadimos la frecuencia al final con ':'
                 linea = ','.join(mutaciones) + ':' + str(frecuencia)
                 archivo.write(linea + '\n')
                 
@@ -141,16 +154,19 @@ if __name__ == "__main__":
     print("Frecuencias de mutaciones:", resultado)
     
     # Probar la función guarda_frec_mutaciones
+    # Guardar el resultado en un archivo
+    # Usamos el resultado obtenido de get_frec_mutaciones
+    # y lo guardamos en un archivo llamado 'reporte_mutaciones.txt'
+    # El archivo se creará en el mismo directorio donde se ejecuta el script    
+    guarda_frec_mutaciones(resultado, 'reporte_mutaciones.txt')
+
 
     # Solo si el resultado es un diccionario válido
     if isinstance(resultado, dict):
         guarda_frec_mutaciones(resultado, 'reporte_mutaciones.txt')
-        print("Archivo de reporte generado exitosamente")
+         
         
-        # Mostrar el contenido del archivo generado
-        with open('reporte_mutaciones.txt', 'r', encoding='utf-8') as f:
-            print("Contenido del reporte:")
-            print(f.read())
+         
     
     # Probar casos especiales
     print("\nPruebas de casos especiales:")
