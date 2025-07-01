@@ -159,6 +159,9 @@ def analizarSecuencias(diccionario_secuencias):
             analisis[nuc] = (cuenta / longitud) * 100 if longitud > 0 else 0
         
         analisis["longitud"] = longitud
+        # Calcular si es alto GC
+        # si el porcentaje de G y C es mayor al 50% 
+        # devuelve True, de lo contrario False
         analisis["alto_gc"] = (conteo["G"] + conteo["C"]) / longitud > 0.5
         
         resultado[gen] = analisis
