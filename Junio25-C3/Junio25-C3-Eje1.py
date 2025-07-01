@@ -56,6 +56,7 @@ def leer_phmetria(ruta_fichero: str) -> dict:
                 if sintomas_str:  # Si hay síntomas
                     # Dividir por comas y limpiar cada síntoma
                     sintomas_raw = sintomas_str.split(',')
+                    
                     sintomas = [sintoma.strip() for sintoma in sintomas_raw if sintoma.strip()]
                 
                 # Agregar al diccionario resultado
@@ -74,6 +75,9 @@ def leer_phmetria(ruta_fichero: str) -> dict:
 
 '''Apartado B: Frecuencia de reflujo ácido por actividad'''
 def frecuencia_reflujo_por_actividad(datos_ph: dict) -> dict:
+
+
+    
     """
     Calcula la frecuencia de reflujo ácido por actividad.
     
@@ -87,6 +91,15 @@ def frecuencia_reflujo_por_actividad(datos_ph: dict) -> dict:
         dict: Diccionario con actividades como claves y frecuencias de reflujo (%) como valores
               Diccionario vacío si la entrada está vacía
     """
+    '''
+    datos_ph -> dict
+    {    Actividad      Mediciones de pH por actividad   
+        'Actividad1': [(pH1, sintomas1), (pH2, sintomas2), ...],
+        'Actividad2': [(pH1, sintomas1), (pH2, sintomas2), ...],
+        ... 
+    }
+    mediciones -> lista de tuplas (pH, síntomas)
+    '''
     # Si el diccionario de entrada está vacío, devolver diccionario vacío
     if not datos_ph:
         return {}

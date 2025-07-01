@@ -84,9 +84,7 @@ def parsea_formula_monomero(formula):
             raise FormMonomeroError("Formato de elemento inválido")
         
         # Extraer el elemento y el número de la coincidencia
-        # match.group(1) es el elemento (ej: 'C', 'H', 'N')
-        # match.group(2) es el número (ej: '2', '4', o una cadena vacía si no hay número)
-        # Si el número es una cadena vacía, asumimos que es 1
+        # match.group(1) es el elemento (ej: 'C', 'H', 'N') 
         elemento = match.group(1)
         # match.group(2) es el número como cadena, puede ser vacío
         # Si es vacío, asumimos que el número es 1
