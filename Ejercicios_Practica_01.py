@@ -267,15 +267,17 @@ def procesarLogs(lista_logs):
         if len(partes) >= 4:
             fecha, hora, nivel, mensaje = partes
             
-            # Contar niveles
+            # este codigo verifica que el nivel sea uno de los esperados 
+            # y actualiza el conteo
             if nivel in resultado["conteo"]:
                 resultado["conteo"][nivel] += 1
             
-            # Guardar mensajes de error
+            # si nivel es ERROR, agregar mensaje a la lista de errores
             if nivel == "ERROR":
                 resultado["errores"].append(mensaje)
             
-            # Guardar primera y última hora
+            # si es el primer log, establecer hora de inicio
+            # y si es el último, establecer hora de fin
             if i == 0:
                 resultado["tiempo"]["inicio"] = hora
             resultado["tiempo"]["fin"] = hora
@@ -330,17 +332,26 @@ def validarContraseñas(diccionario_usuarios, reglas):
         
         # Verificar mayúsculas
         if reglas.get("requiere_mayuscula", False):
+            # si requiere mayúscula, verificar si hay al menos una
+            #  isupper() verifica si hay al menos una mayúsculaen la contraseña, si no hay, agregar error
+            # si entra en el if, significa que no hay mayúscula
+            # y se agrega el error correspondiente
             if not any(c.isupper() for c in contraseña):
                 errores.append("Falta mayúscula")
         
         # Verificar números
         if reglas.get("requiere_numero", False):
+            #si requiere número, verificar si hay al menos uno
+            # isdigit() verifica si hay al menos un número en la contraseña, si no hay, agregar error
+            # si entra en el if, significa que no hay número
             if not any(c.isdigit() for c in contraseña):
                 errores.append("Falta número")
         
         # Verificar caracteres especiales
         if reglas.get("requiere_especial", False):
             especiales = reglas.get("caracteres_especiales", "")
+            #si requiere especial, verificar si hay al menos uno
+            # si entra en el if, significa que no hay carácter especial
             if not any(c in especiales for c in contraseña):
                 errores.append("Falta carácter especial")
         
@@ -348,7 +359,7 @@ def validarContraseñas(diccionario_usuarios, reglas):
         if errores:
             resultado[usuario] = {"valida": False, "errores": errores}
         else:
-            resultado[usuario] = {"valida": True, "errores": []}
+            resultado[usuario] = {"valida": True, "errores": errores}
     
     return resultado
 
