@@ -16,6 +16,7 @@ contarCaracteres("hola mundo") → {'h':1, 'o':2, 'l':1, 'a':1, ' ':1, 'm':1, 'u
 def contarCaracteres(texto):
     contador = {}
     for char in texto:
+        
         contador[char] = contador.get(char, 0) + 1
     return contador
 
@@ -43,6 +44,7 @@ sonAnagramas("hola", "algo") → False
 
 def sonAnagramas(palabra1, palabra2):
     # Limpiar y convertir a minúsculas
+    # Convertir las palabras a minúsculas y eliminar espacios
     p1 = palabra1.lower().replace(" ", "")
     p2 = palabra2.lower().replace(" ", "")
     
@@ -369,6 +371,213 @@ def test_ejercicio8():
 
 
 # ==============================================================================
+# EJERCICIO 9: Análisis de Resultados de Laboratorio Clínico (Avanzado)
+# ==============================================================================
+"""
+En un laboratorio clínico se tiene un diccionario con resultados de análisis de sangre
+de varios pacientes. Crea una función analizarResultadosLab(resultados_pacientes) que:
+
+1. Identifique valores fuera del rango normal
+2. Calcule el riesgo cardiovascular basado en colesterol y triglicéridos
+3. Sugiera qué pacientes necesitan seguimiento urgente
+
+El diccionario de entrada tiene formato:
+{
+    "paciente_id": {
+        "nombre": "Juan Pérez",
+        "edad": 45,
+        "analisis": {
+            "glucosa": 110,        # mg/dL (normal: 70-100)
+            "colesterol": 220,     # mg/dL (normal: <200)
+            "trigliceridos": 180,  # mg/dL (normal: <150)
+            "hemoglobina": 13.5,   # g/dL (normal hombre: 13.5-17.5, mujer: 12-15.5)
+            "leucocitos": 7500,    # /mm³ (normal: 4500-11000)
+            "plaquetas": 250000    # /mm³ (normal: 150000-450000)
+        },
+        "sexo": "M"  # M o F
+    }
+}
+
+La función debe devolver un diccionario con:
+- Valores fuera de rango para cada paciente
+
+rangos_normales = {
+        "glucosa": {"min": 70, "max": 100},
+        "colesterol": {"min": 0, "max": 200},
+        "trigliceridos": {"min": 0, "max": 150},
+        "leucocitos": {"min": 4500, "max": 11000},
+        "plaquetas": {"min": 150000, "max": 450000},
+        "hemoglobina": {
+            "M": {"min": 13.5, "max": 17.5},
+            "F": {"min": 12.0, "max": 15.5}
+        }
+    }
+
+
+- Nivel de riesgo cardiovascular (bajo/medio/alto)
+- Lista de pacientes que requieren seguimiento urgente
+"""
+
+def analizarResultadosLab(resultados_pacientes):
+    # Rangos normales de referencia
+    rangos_normales = {
+        "glucosa": {"min": 70, "max": 100},
+        "colesterol": {"min": 0, "max": 200},
+        "trigliceridos": {"min": 0, "max": 150},
+        "leucocitos": {"min": 4500, "max": 11000},
+        "plaquetas": {"min": 150000, "max": 450000},
+        "hemoglobina": {
+            "M": {"min": 13.5, "max": 17.5},
+            "F": {"min": 12.0, "max": 15.5}
+        }
+    }
+    
+    resultado_analisis = {
+        "valores_anormales": {},
+        "riesgo_cardiovascular": {},
+        "seguimiento_urgente": []
+    }
+    
+    for paciente_id, datos in resultados_pacientes.items():
+        nombre = datos["nombre"]
+        sexo = datos["sexo"]
+        analisis = datos["analisis"]
+        valores_fuera_rango = []
+        
+        # Verificar cada parámetro
+        for parametro, valor in analisis.items():
+            if parametro == "hemoglobina":
+                rango = rangos_normales[parametro][sexo]
+                if valor < rango["min"] or valor > rango["max"]:
+                    valores_fuera_rango.append({
+                        "parametro": parametro,
+                        "valor": valor,
+                        "rango_normal": f"{rango['min']}-{rango['max']}"
+                    })
+            elif parametro in rangos_normales:
+                rango = rangos_normales[parametro]
+                if valor < rango["min"] or valor > rango["max"]:
+                    valores_fuera_rango.append({
+                        "parametro": parametro,
+                        "valor": valor,
+                        "rango_normal": f"{rango['min']}-{rango['max']}"
+                    })
+        
+        # Calcular riesgo cardiovascular
+        colesterol = analisis.get("colesterol", 0)
+        trigliceridos = analisis.get("trigliceridos", 0)
+        
+        if colesterol > 240 or trigliceridos > 200:
+            riesgo = "alto"
+        elif colesterol > 200 or trigliceridos > 150:
+            riesgo = "medio"
+        else:
+            riesgo = "bajo"
+        
+        # Determinar si necesita seguimiento urgente
+        necesita_seguimiento = False
+        
+        # Criterios para seguimiento urgente
+        if analisis.get("glucosa", 0) > 126:  # Posible diabetes
+            necesita_seguimiento = True
+        if analisis.get("leucocitos", 0) < 4000 or analisis.get("leucocitos", 0) > 12000:
+            necesita_seguimiento = True
+        if riesgo == "alto":
+            necesita_seguimiento = True
+        if parametro == "hemoglobina" and (valor < 10 or valor > 18):
+            necesita_seguimiento = True
+        
+        # Guardar resultados
+        if valores_fuera_rango:
+            resultado_analisis["valores_anormales"][paciente_id] = {
+                "nombre": nombre,
+                "valores": valores_fuera_rango
+            }
+        
+        resultado_analisis["riesgo_cardiovascular"][paciente_id] = {
+            "nombre": nombre,
+            "nivel": riesgo,
+            "colesterol": colesterol,
+            "trigliceridos": trigliceridos
+        }
+        
+        if necesita_seguimiento:
+            resultado_analisis["seguimiento_urgente"].append({
+                "id": paciente_id,
+                "nombre": nombre,
+                "motivo": "Valores críticos detectados"
+            })
+    
+    return resultado_analisis
+
+
+# Tests para el ejercicio 9
+def test_ejercicio9():
+    print("=== EJERCICIO 9: Análisis de Resultados de Laboratorio ===")
+    
+    # Datos de prueba con varios pacientes
+    resultados = {
+        "PAC001": {
+            "nombre": "Juan Pérez",
+            "edad": 45,
+            "sexo": "M",
+            "analisis": {
+                "glucosa": 130,      # Alto
+                "colesterol": 250,   # Alto
+                "trigliceridos": 180, # Alto
+                "hemoglobina": 14.2,
+                "leucocitos": 8000,
+                "plaquetas": 200000
+            }
+        },
+        "PAC002": {
+            "nombre": "María García",
+            "edad": 38,
+            "sexo": "F",
+            "analisis": {
+                "glucosa": 85,
+                "colesterol": 180,
+                "trigliceridos": 120,
+                "hemoglobina": 11.5,  # Bajo
+                "leucocitos": 5500,
+                "plaquetas": 300000
+            }
+        },
+        "PAC003": {
+            "nombre": "Carlos López",
+            "edad": 52,
+            "sexo": "M",
+            "analisis": {
+                "glucosa": 95,
+                "colesterol": 190,
+                "trigliceridos": 140,
+                "hemoglobina": 15.0,
+                "leucocitos": 3500,   # Muy bajo
+                "plaquetas": 180000
+            }
+        }
+    }
+    
+    resultado = analizarResultadosLab(resultados)
+    
+    print("\n1. VALORES FUERA DE RANGO:")
+    for pac_id, info in resultado["valores_anormales"].items():
+        print(f"\n   Paciente: {info['nombre']} ({pac_id})")
+        for valor in info["valores"]:
+            print(f"   - {valor['parametro']}: {valor['valor']} (normal: {valor['rango_normal']})")
+    
+    print("\n2. RIESGO CARDIOVASCULAR:")
+    for pac_id, info in resultado["riesgo_cardiovascular"].items():
+        print(f"   {info['nombre']}: Riesgo {info['nivel'].upper()} (Col: {info['colesterol']}, Trig: {info['trigliceridos']})")
+    
+    print("\n3. REQUIEREN SEGUIMIENTO URGENTE:")
+    for paciente in resultado["seguimiento_urgente"]:
+        print(f"   - {paciente['nombre']} ({paciente['id']}): {paciente['motivo']}")
+    
+    print()
+
+
+# ==============================================================================
 # EJECUTAR TODOS LOS TESTS
 # ==============================================================================
 if __name__ == "__main__":
@@ -383,3 +592,4 @@ if __name__ == "__main__":
     test_ejercicio6()
     test_ejercicio7()
     test_ejercicio8()
+    test_ejercicio9()
